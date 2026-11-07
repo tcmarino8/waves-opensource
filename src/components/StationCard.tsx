@@ -1,14 +1,22 @@
 import type { StationData } from '../types/buoy'
 import { degreesToCompass } from '../utils/direction'
-import { formatNumber, metersToFeet } from '../utils/units'
+import { celsiusToFahrenheit, formatNumber, metersToFeet } from '../utils/units'
+
+export type PeriodTrajectory = 'increasing' | 'decreasing' | 'steady' | 'unknown'
 
 interface StationCardProps {
   station: StationData
+  periodTrajectory: PeriodTrajectory
 }
 
-export function StationCard({ station }: StationCardProps) {
+export function StationCard({ station, periodTrajectory }: StationCardProps) {
   const latest = station.latestObservation
   const waveDirection = latest?.meanWaveDirection ?? null
+  const temperatureCelsius = latest?.waterTemperature ?? latest?.airTemperature ?? null
+  const temperatureLabel =
+    latest?.waterTemperature !== null && latest?.waterTemperature !== undefined
+      ? 'Water Temperature'
+      : 'Air Temperature'
 
   return (
     <article className="station-card">
@@ -17,6 +25,10 @@ export function StationCard({ station }: StationCardProps) {
 
       <p className="primary-reading">{formatNumber(metersToFeet(latest?.waveHeight ?? null), 1, 'ft')}</p>
       <p className="caption">Significant Wave Height</p>
+      <p className={`temperature-reading ${periodTrajectory}`}>
+        {formatNumber(celsiusToFahrenheit(temperatureCelsius), 1, '°F')}
+      </p>
+      <p className="caption">{temperatureLabel}</p>
 
       <div className="station-metrics">
         <div>

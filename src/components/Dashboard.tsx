@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import { Header } from './Header'
 import { StationCard } from './StationCard'
+import type { PeriodTrajectory } from './StationCard'
 import { WaveHeightChart } from './WaveHeightChart'
 import { WavePeriodChart } from './WavePeriodChart'
 import { BuoyGlobe } from './BuoyGlobe'
@@ -11,7 +12,7 @@ import {
   type StationConfig,
 } from '../config/stations'
 import { fetchNearbyStations } from '../services/stationCatalogService'
-import { formatLocalDateTime } from '../utils/time'
+import { filterToRecentWindow, formatLocalDateTime } from '../utils/time'
 import './dashboard.css'
 
 const WINDOW_OPTIONS = [6, 12, 24, 36] as const
@@ -25,7 +26,7 @@ function dedupeStations(stations: StationConfig[]): StationConfig[] {
 }
 
 export function Dashboard() {
-  const [windowHours, setWindowHours] = useState<(typeof WINDOW_OPTIONS)[number]>(10)
+  const [windowHours, setWindowHours] = useState<(typeof WINDOW_OPTIONS)[number]>(12)
   const [stationOptions, setStationOptions] = useState<StationConfig[]>(DEFAULT_STATIONS)
   const [selectedStationIds, setSelectedStationIds] = useState<[string, string]>([
     DEFAULT_STATIONS[0].id,
@@ -116,6 +117,32 @@ export function Dashboard() {
     return latestObservationMs > 0 ? latestObservationMs : Date.now()
   }, [stations])
 
+  const periodTrajectoryByStationId = useMemo(
+    () =>
+      new Map<string, PeriodTrajectory>(
+        stations.map((station) => {
+          const recentWindow = filterToRecentWindow(station.observations, windowHours, chartAnchorTimeMs)
+          const periodValues = recentWindow
+            .map((observation) => observation.dominantWavePeriod)
+            .filter((period): period is number => period !== null)
+
+          if (periodValues.length < 2) {
+            return [station.stationId, 'unknown']
+          }
+
+          const periodDelta = periodValues[periodValues.length - 1] - periodValues[0]
+          if (periodDelta > 0) {
+            return [station.stationId, 'increasing']
+          }
+          if (periodDelta < 0) {
+            return [station.stationId, 'decreasing']
+          }
+          return [station.stationId, 'steady']
+        }),
+      ),
+    [stations, windowHours, chartAnchorTimeMs],
+  )
+
   const shiftWindow = (step: 1 | -1) => {
     setWindowHours((currentWindow) => {
       const currentIndex = WINDOW_OPTIONS.indexOf(currentWindow)
@@ -191,7 +218,11 @@ export function Dashboard() {
 
       <section className="station-grid">
         {stations.map((station) => (
-          <StationCard key={station.stationId} station={station} />
+          <StationCard
+            key={station.stationId}
+            station={station}
+            periodTrajectory={periodTrajectoryByStationId.get(station.stationId) ?? 'unknown'}
+          />
         ))}
       </section>
 

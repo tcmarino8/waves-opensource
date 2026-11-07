@@ -99,6 +99,21 @@
   text-transform: uppercase;
 }
 
+.temperature-reading {
+  margin: 0.55rem 0 0.2rem;
+  font-size: clamp(1.2rem, 4.2vw, 1.8rem);
+  line-height: 1.1;
+  color: #f8fbff;
+}
+
+.temperature-reading.increasing {
+  color: #ff7a7a;
+}
+
+.temperature-reading.decreasing {
+  color: #6da8ff;
+}
+
 .station-metrics {
   margin-top: 0.75rem;
   display: grid;

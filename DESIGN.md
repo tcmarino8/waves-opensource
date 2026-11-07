@@ -73,6 +73,7 @@ SURF WATCH is a React + TypeScript single-page PWA with this flow:
 - [src/components/StationCard.tsx](./src/components/StationCard.tsx)  
   Per-station primary readings:
   - significant wave height
+  - station temperature (water temp when available, else air temp), colorized by dominant-period trend
   - dominant period
   - mean wave direction
 
