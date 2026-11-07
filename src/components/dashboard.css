@@ -117,7 +117,7 @@
 .station-metrics {
   margin-top: 0.75rem;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.55rem;
 }
 
@@ -183,6 +183,19 @@
   font-weight: 600;
 }
 
+.tide-window-chart {
+  margin-top: 0.65rem;
+  width: min(220px, 100%);
+  aspect-ratio: 2 / 3;
+  min-height: 150px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.tide-window-empty {
+  margin: 0.65rem 0 0;
+}
+
 .globe-container {
   width: 100%;
   max-width: 560px;
@@ -208,5 +221,9 @@
   .station-picker-grid,
   .chart-grid {
     grid-template-columns: 1fr;
+  }
+
+  .station-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

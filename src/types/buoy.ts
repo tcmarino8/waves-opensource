@@ -12,6 +12,17 @@ export interface BuoyObservation {
   waterTemperature: number | null
 }
 
+export interface TideData {
+  stationId: string
+  stationLabel: string
+  timestamp: string
+  levelFeet: number
+  observations: Array<{
+    timestamp: string
+    levelFeet: number
+  }>
+}
+
 export type StationStatus = 'online' | 'delayed' | 'offline'
 
 export interface StationData {
@@ -19,6 +30,8 @@ export interface StationData {
   stationLabel: string
   observations: BuoyObservation[]
   latestObservation: BuoyObservation | null
+  tide: TideData | null
+  tideError?: string
   lastSuccessfulRefresh: string | null
   status: StationStatus
   error?: string

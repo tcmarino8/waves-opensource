@@ -8,8 +8,10 @@ SURF WATCH is a mobile-first Progressive Web App (PWA) for monitoring real-time 
 - "Select Other Stations" picker that uses your location to suggest nearby NOAA stations.
 - Exactly two active stations at a time (Station A and Station B).
 - Real NOAA observation parsing from `realtime2/{stationId}.txt`.
+- Tide level integration from NOAA Tides & Currents using nearest tide-prediction stations.
 - Side-by-side buoy cards and side-by-side chart panels on larger screens.
-- Adjustable chart windows (5, 10, 20 hours) by swiping directly on either chart.
+- Adjustable chart windows (6, 12, 24, 36 hours) by swiping directly on either chart.
+- Compact tide subplot in the Time Window panel, using NOAA Tides & Currents predictions for the selected window.
 - Interactive spinning globe with buoy locations (drag to spin).
 - Auto-refresh every 10 minutes plus manual refresh.
 - Data staleness states (`online`, `delayed`, `offline`, `partial`).
@@ -41,6 +43,7 @@ npm run preview
 
 The frontend tries [/api/station](./api/station.ts) first, then falls back to direct NOAA fetch.
 Nearby station discovery uses [/api/stations](./api/stations.ts), which proxies NOAA active-station XML.
+Tide integration uses [/api/tide-stations](./api/tide-stations.ts) and [/api/tides](./api/tides.ts) for NOAA Tides & Currents data.
 
 Deploying on Vercel will automatically expose this serverless function and improve reliability when direct NOAA CORS behavior changes.
 

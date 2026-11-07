@@ -24,7 +24,12 @@ function noaaDevProxyPlugin() {
         const requestUrl = req.url ? new URL(req.url, 'http://localhost') : null
         const pathname = requestUrl?.pathname ?? ''
 
-        if (pathname !== '/api/station' && pathname !== '/api/stations') {
+        if (
+          pathname !== '/api/station' &&
+          pathname !== '/api/stations' &&
+          pathname !== '/api/tide-stations' &&
+          pathname !== '/api/tides'
+        ) {
           next()
           return
         }
@@ -55,6 +60,75 @@ function noaaDevProxyPlugin() {
               error instanceof Error
                 ? `Failed to fetch station catalog: ${error.message}`
                 : 'Failed to fetch station catalog.',
+            )
+          }
+          return
+        }
+
+        if (pathname === '/api/tide-stations') {
+          try {
+            const upstream = await fetch(
+              'https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json?type=tidepredictions&units=english',
+              {
+                headers: {
+                  Accept: 'application/json',
+                },
+              },
+            )
+
+            const body = await upstream.text()
+            res.statusCode = upstream.status
+            res.setHeader('Content-Type', 'application/json; charset=utf-8')
+            res.end(body)
+          } catch (error) {
+            res.statusCode = 502
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            res.end(
+              error instanceof Error
+                ? `Failed to fetch tide station catalog: ${error.message}`
+                : 'Failed to fetch tide station catalog.',
+            )
+          }
+          return
+        }
+
+        if (pathname === '/api/tides') {
+          const tideStationId = requestUrl?.searchParams.get('stationId') ?? ''
+          const tideRange = requestUrl?.searchParams.get('range') ?? 'latest'
+          if (!/^[a-z0-9]{5,8}$/i.test(tideStationId)) {
+            res.statusCode = 400
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            res.end('Invalid tide station ID.')
+            return
+          }
+          if (tideRange !== 'latest' && tideRange !== 'recent') {
+            res.statusCode = 400
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            res.end('Invalid tide range.')
+            return
+          }
+
+          try {
+            const upstream = await fetch(
+              `https://api.tidesandcurrents.noaa.gov/api/prod/datagetter?product=predictions&date=${encodeURIComponent(tideRange)}&datum=MLLW&time_zone=gmt&units=english&interval=6&format=json&station=${encodeURIComponent(tideStationId)}`,
+              {
+                headers: {
+                  Accept: 'application/json',
+                },
+              },
+            )
+
+            const body = await upstream.text()
+            res.statusCode = upstream.status
+            res.setHeader('Content-Type', 'application/json; charset=utf-8')
+            res.end(body)
+          } catch (error) {
+            res.statusCode = 502
+            res.setHeader('Content-Type', 'text/plain; charset=utf-8')
+            res.end(
+              error instanceof Error
+                ? `Failed to fetch tide prediction data: ${error.message}`
+                : 'Failed to fetch tide prediction data.',
             )
           }
           return

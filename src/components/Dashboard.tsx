@@ -4,6 +4,7 @@ import { StationCard } from './StationCard'
 import type { PeriodTrajectory } from './StationCard'
 import { WaveHeightChart } from './WaveHeightChart'
 import { WavePeriodChart } from './WavePeriodChart'
+import { TideWindowChart } from './TideWindowChart'
 import { BuoyGlobe } from './BuoyGlobe'
 import { useBuoyData } from '../hooks/useBuoyData'
 import {
@@ -109,12 +110,16 @@ export function Dashboard() {
   } = useBuoyData(selectedStations)
 
   const chartAnchorTimeMs = useMemo(() => {
-    const latestObservationMs = Math.max(
+    const latestBuoyObservationMs = Math.max(
       ...stations.map((station) =>
         station.latestObservation ? new Date(station.latestObservation.timestamp).getTime() : 0,
       ),
     )
-    return latestObservationMs > 0 ? latestObservationMs : Date.now()
+    const latestTideObservationMs = Math.max(
+      ...stations.map((station) => (station.tide ? new Date(station.tide.timestamp).getTime() : 0)),
+    )
+    const latestDataMs = Math.max(latestBuoyObservationMs, latestTideObservationMs)
+    return latestDataMs > 0 ? latestDataMs : Date.now()
   }, [stations])
 
   const periodTrajectoryByStationId = useMemo(
@@ -229,6 +234,7 @@ export function Dashboard() {
       <section className="panel">
         <h3>Time Window</h3>
         <div className="window-readout">{windowHours} hrs</div>
+        <TideWindowChart stations={stations} windowHours={windowHours} anchorTimeMs={chartAnchorTimeMs} />
         <p className="footer-note">
           Swipe left on either chart for a smaller window, right for a larger window.
         </p>

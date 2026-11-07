@@ -40,6 +40,7 @@ SURF WATCH is a React + TypeScript single-page PWA with this flow:
   - validates station IDs
   - fetches `/api/station?stationId=...` first
   - falls back to direct NOAA URL when needed
+  - fetches nearest-station tide data from NOAA Tides & Currents
   - builds normalized `StationData` output
 
 - [src/services/dataParser.ts](./src/services/dataParser.ts)  
@@ -56,6 +57,12 @@ SURF WATCH is a React + TypeScript single-page PWA with this flow:
   - parses buoy station metadata
   - computes nearest stations by geodesic distance
   - returns top nearby options for selection
+
+- [src/services/tideService.ts](./src/services/tideService.ts)  
+  Tide integration:
+  - loads NOAA tide-prediction station catalog
+  - finds nearest tide station to each buoy
+  - fetches latest tide level prediction (MLLW, feet)
 
 ## Configuration and types
 
@@ -75,10 +82,11 @@ SURF WATCH is a React + TypeScript single-page PWA with this flow:
   - significant wave height
   - station temperature (water temp when available, else air temp), colorized by dominant-period trend
   - dominant period
+  - tide level from nearest NOAA tide station
   - mean wave direction
 
 - [src/components/WaveHeightChart.tsx](./src/components/WaveHeightChart.tsx)  
-  Wave height comparison chart (ft), gap-aware for missing points, using selected window (5/10/20 hours).
+  Wave height comparison chart (ft), gap-aware for missing points, using selected window (6/12/24/36 hours).
 
 - [src/components/WavePeriodChart.tsx](./src/components/WavePeriodChart.tsx)  
   Dominant period comparison chart (sec), same shared selected time window.
@@ -92,6 +100,9 @@ SURF WATCH is a React + TypeScript single-page PWA with this flow:
 - [src/components/dashboard.css](./src/components/dashboard.css)  
   Mobile-first dark styling and responsive layout.
 
+- [src/components/TideWindowChart.tsx](./src/components/TideWindowChart.tsx)  
+  Compact tide subplot embedded in the Time Window panel, plotting recent NOAA tide predictions across the selected window.
+
 ## Utilities
 
 - [src/utils/time.ts](./src/utils/time.ts)  
@@ -103,6 +114,9 @@ SURF WATCH is a React + TypeScript single-page PWA with this flow:
 - [src/utils/direction.ts](./src/utils/direction.ts)  
   Degree-to-16-point compass conversion.
 
+- [src/utils/geo.ts](./src/utils/geo.ts)  
+  Shared geodesic distance helper for nearby-station calculations.
+
 ## PWA and deployment support
 
 - [vite.config.ts](./vite.config.ts)  
@@ -110,12 +124,20 @@ SURF WATCH is a React + TypeScript single-page PWA with this flow:
   - PWA manifest/service worker setup
   - local dev middleware for `/api/station`
   - local dev middleware for `/api/stations`
+  - local dev middleware for `/api/tide-stations`
+  - local dev middleware for `/api/tides`
 
 - [api/station.ts](./api/station.ts)  
   Vercel serverless proxy endpoint with station validation, timeout handling, and cache headers.
 
 - [api/stations.ts](./api/stations.ts)  
   Vercel serverless proxy endpoint for NOAA active-station catalog XML.
+
+- [api/tide-stations.ts](./api/tide-stations.ts)  
+  Vercel serverless proxy endpoint for NOAA tide-prediction station catalog.
+
+- [api/tides.ts](./api/tides.ts)  
+  Vercel serverless proxy endpoint for NOAA tide predictions.
 
 ## 3) Data model snapshot
 

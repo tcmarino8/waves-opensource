@@ -1,5 +1,6 @@
 import type { StationData } from '../types/buoy'
 import { degreesToCompass } from '../utils/direction'
+import { formatLocalDateTime } from '../utils/time'
 import { celsiusToFahrenheit, formatNumber, metersToFeet } from '../utils/units'
 
 export type PeriodTrajectory = 'increasing' | 'decreasing' | 'steady' | 'unknown'
@@ -17,6 +18,11 @@ export function StationCard({ station, periodTrajectory }: StationCardProps) {
     latest?.waterTemperature !== null && latest?.waterTemperature !== undefined
       ? 'Water Temperature'
       : 'Air Temperature'
+  const tideTitle = station.tideError
+    ? station.tideError
+    : station.tide
+      ? `Nearest tide station: ${station.tide.stationLabel}. Latest prediction: ${formatLocalDateTime(station.tide.timestamp)}.`
+      : undefined
 
   return (
     <article className="station-card">
@@ -34,6 +40,12 @@ export function StationCard({ station, periodTrajectory }: StationCardProps) {
         <div>
           <div className="metric-label">Dominant Period</div>
           <div className="metric-value">{formatNumber(latest?.dominantWavePeriod ?? null, 0, 'sec')}</div>
+        </div>
+        <div>
+          <div className="metric-label">Tide Level (MLLW)</div>
+          <div className="metric-value" title={tideTitle}>
+            {formatNumber(station.tide?.levelFeet ?? null, 2, 'ft')}
+          </div>
         </div>
         <div>
           <div className="metric-label">Wave Direction</div>

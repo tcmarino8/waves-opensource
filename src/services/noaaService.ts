@@ -2,6 +2,7 @@ import type { StationConfig } from '../config/stations'
 import type { StationData } from '../types/buoy'
 import { parseNdbcText } from './dataParser'
 import { deriveStatus } from '../utils/time'
+import { fetchTideDataForLocation } from './tideService'
 
 const NOAA_BASE_URL = 'https://www.ndbc.noaa.gov/data/realtime2'
 
@@ -51,12 +52,22 @@ export async function fetchStationData(
   const rawText = await getStationText(station.id, signal)
   const observations = parseNdbcText(rawText)
   const latestObservation = observations.length > 0 ? observations[observations.length - 1] : null
+  let tide: StationData['tide'] = null
+  let tideError: string | undefined
+
+  try {
+    tide = await fetchTideDataForLocation(station.latitude, station.longitude, signal)
+  } catch (error) {
+    tideError = error instanceof Error ? error.message : 'Failed to load tide data.'
+  }
 
   return {
     stationId: station.id,
     stationLabel: station.label,
     observations,
     latestObservation,
+    tide,
+    tideError,
     lastSuccessfulRefresh: new Date().toISOString(),
     status: deriveStatus(latestObservation?.timestamp ?? null),
   }

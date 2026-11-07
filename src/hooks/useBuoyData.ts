@@ -81,6 +81,7 @@ export function useBuoyData(selectedStations: StationConfig[]): BuoyDataResult {
           stationLabel: station.label,
           observations: [],
           latestObservation: null,
+          tide: null,
           lastSuccessfulRefresh: null,
           status: 'offline',
           error: stationResult.reason instanceof Error
