@@ -14,7 +14,7 @@ import { fetchNearbyStations } from '../services/stationCatalogService'
 import { formatLocalDateTime } from '../utils/time'
 import './dashboard.css'
 
-const WINDOW_OPTIONS = [5, 10, 20] as const
+const WINDOW_OPTIONS = [6, 12, 24, 36] as const
 
 function dedupeStations(stations: StationConfig[]): StationConfig[] {
   const map = new Map<string, StationConfig>()
