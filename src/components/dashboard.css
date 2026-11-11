@@ -74,6 +74,28 @@
   padding: 0.45rem 0.8rem;
 }
 
+.report-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.report-text {
+  line-height: 1.5;
+}
+
+.report-text p:last-child {
+  margin-bottom: 0;
+}
+
+.report-error {
+  color: #ffc3b6;
+}
+
+.report-error:empty {
+  display: none;
+}
+
 .station-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

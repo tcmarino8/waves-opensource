@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "tsx --test tests/buoyReport.test.ts"
   },
   "dependencies": {
     "chart.js": "^4.5.1",
@@ -23,6 +24,7 @@
     "@types/react-dom": "^18.3.1",
     "@vercel/node": "^5.3.24",
     "@vitejs/plugin-react": "^4.3.3",
+    "tsx": "^4.21.0",
     "typescript": "^5.6.3",
     "vite": "^5.4.10",
     "vite-plugin-pwa": "^0.20.5"

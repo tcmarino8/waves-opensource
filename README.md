@@ -15,6 +15,7 @@ SURF WATCH is a mobile-first Progressive Web App (PWA) for monitoring real-time 
 - Interactive spinning globe with buoy locations (drag to spin).
 - Auto-refresh every 10 minutes plus manual refresh.
 - Data staleness states (`online`, `delayed`, `offline`, `partial`).
+- Written buoy conditions report for the selected stations, with optional browser text-to-speech playback.
 - PWA install support (manifest + service worker).
 
 ## Configuration
@@ -37,6 +38,12 @@ npm run dev
 ```bash
 npm run build
 npm run preview
+```
+
+## Tests
+
+```bash
+npm test
 ```
 
 ## Optional NOAA Proxy (Vercel)
@@ -66,4 +73,5 @@ Deploying on Vercel will automatically expose this serverless function and impro
 - NOAA timestamps are UTC and are converted to local time in the UI.
 - Missing sentinel values (`MM`, `99`, `999`, `9999`, etc.) are treated as missing and are not displayed as measurements.
 - Cached observations are never labeled as live; station status is based on observation recency.
+- The report describes offshore buoy observations, not a forecast of breaking waves at a beach. Tide levels are predictions from the nearest tide station. Voice playback depends on browser support and does not require a microphone or AI service.
 - Design documentation for architecture and key files is in [DESIGN.md](./DESIGN.md).

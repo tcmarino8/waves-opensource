@@ -6,6 +6,7 @@ import { WaveHeightChart } from './WaveHeightChart'
 import { WavePeriodChart } from './WavePeriodChart'
 import { TideWindowChart } from './TideWindowChart'
 import { BuoyGlobe } from './BuoyGlobe'
+import { BuoyReport } from './BuoyReport'
 import { useBuoyData } from '../hooks/useBuoyData'
 import {
   DEFAULT_STATIONS,
@@ -230,6 +231,8 @@ export function Dashboard() {
           />
         ))}
       </section>
+
+      <BuoyReport selectedStations={selectedStations} stations={stations} />
 
       <section className="panel">
         <h3>Time Window</h3>

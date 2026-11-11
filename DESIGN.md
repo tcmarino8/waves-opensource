@@ -85,6 +85,9 @@ SURF WATCH is a React + TypeScript single-page PWA with this flow:
   - tide level from nearest NOAA tide station
   - mean wave direction
 
+- [src/components/BuoyReport.tsx](./src/components/BuoyReport.tsx) and [src/utils/buoyReport.ts](./src/utils/buoyReport.ts)
+  Generate a written report for the selected stations and optionally read it aloud with browser speech synthesis. Reports identify observation times, unavailable data, refresh failures, and tide predictions.
+
 - [src/components/WaveHeightChart.tsx](./src/components/WaveHeightChart.tsx)  
   Wave height comparison chart (ft), gap-aware for missing points, using selected window (6/12/24/36 hours).
 
